@@ -1,6 +1,7 @@
 // components/LogList.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useGlobalDispatch, useUserData } from '../globalContext';
 
 function LogList({ logs = [] }) {
   const [selectedLog, setSelectedLog] = useState(null);
@@ -8,12 +9,15 @@ function LogList({ logs = [] }) {
   const handleMemoChange = (e) => {
     setMemo(e.target.value);
   };
+  const dispatch = useGlobalDispatch();
+  const userData = useUserData();
 
   const saveMemo = async (logId) => {
     try {
       await axios.post('/api/editLog', { logId, memo });
       alert('Memo saved successfully');
-      // Update the local state or re-fetch logs here if needed
+      const newLogs = await axios.get(`/api/getLogs?userId=${userData?.user_id}`);
+      dispatch({ type: 'SET_LOGS', payload: newLogs.data });
     } catch (error) {
       console.error('Error saving memo:', error);
       alert('Failed to save memo');
@@ -33,7 +37,7 @@ function LogList({ logs = [] }) {
           </tr>
         </thead>
         <tbody>
-          {(Array.isArray(logs) ? logs : []).map((log) => (
+          {(Array.isArray(logs) ? [...logs].sort((a, b) => new Date(b.start_time) - new Date(a.start_time)) : []).map((log) => (
             <tr key={log.log_id}>
               <td className="border px-2 py-1 text-center">
                 {new Date(log.start_time).toLocaleString()}
@@ -45,6 +49,7 @@ function LogList({ logs = [] }) {
             </tr>
           ))}
         </tbody>
+
       </table>
 
       {selectedLog && (

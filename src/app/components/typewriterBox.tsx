@@ -1,10 +1,7 @@
-// components/TypewriterTextBox.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
 
-function TypewriterTextBox({ text }) {
+function TypewriterTextBox({ text, typingDelay = 50}) {
   const [displayedText, setDisplayedText] = useState('');
-  const typingDelay = 50;
 
   useEffect(() => {
     let index = 1;

@@ -4,6 +4,7 @@ export default async (req, res) => {
   try {
     // Assuming you're sending the user's ID in the request's body or query
     const userId = req.body.userId || req.query.userId;
+    console.log(userId);
 
     if (!userId) {
       return res.status(400).send('User ID is required');

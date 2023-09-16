@@ -4,9 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlay, faPause, faRefresh, faCouch, faBed,
 } from '@fortawesome/free-solid-svg-icons';
-import Cookies from 'js-cookie';
+import { data } from 'autoprefixer';
 import {
-  useGlobalDispatch, useSceneHandlers, useUserData,
+  useGlobalDispatch, useSceneHandlers, useUserData, useGlobalState,
 } from '../globalContext';
 import { ACTIONS } from './stateManage';
 
@@ -36,6 +36,7 @@ function PomodoroTimer({ setMessage }) {
   const sceneHandlers = useSceneHandlers();
   const dispatch = useGlobalDispatch();
   const userData = useUserData();
+  const globalState = useGlobalState();
 
   const minutesRef = useRef(minutes);
   const secondsRef = useRef(seconds);
@@ -93,16 +94,24 @@ function PomodoroTimer({ setMessage }) {
     try {
       await axios.post('/api/addLog', { userId: userData?.user_id, startTime, endTime });
     } catch (error) {
-      console.error('Error adding log:', error);
     }
   };
 
   const fetchLogs = async () => {
     try {
-      const logs = await axios.get('/api/getLogs');
+      const userId = userData?.user_id;
+      const logs = await axios.get(`/api/getLogs?userId=${userId}`);
       dispatch({ type: 'SET_LOGS', payload: logs.data });
     } catch (error) {}
   };
+
+  useEffect(() => {
+    if (sceneHandlers.jump) {
+      sceneHandlers.jump();
+      setMessage('...Leo is so happy to see you!', 70);
+    }
+  }, [sceneHandlers.jump]);
+
   useEffect(() => {
     let interval;
 
@@ -130,9 +139,10 @@ function PomodoroTimer({ setMessage }) {
 
             try {
               const userId = userData?.user_id;
+              console.log(userData);
               axios.post('/api/incrementTomato', { userId }).then((response) => {
                 if (response.status === 200) {
-                  const newTomatoNumber = userData?.tomato_number + 1;
+                  const newTomatoNumber = globalState.user.tomatoNumber + 1;
                   dispatch({ type: ACTIONS.SET_TOMATO_VISIBILITY, payload: true });
 
                   dispatch({
@@ -141,6 +151,7 @@ function PomodoroTimer({ setMessage }) {
                   });
                   setMessage('Task complete, Leo\'s back! Leo brought you back a Tomato!');
                   addLog(startTime, endTime);
+                  fetchLogs();
                 }
               });
             } catch (error) {

@@ -65,7 +65,6 @@ const Scene = function () {
             dispatch({ type: 'INCREMENT_JUMP_COUNT' });
           }
           gltf.scene.position.y = newYPosition / 2;
-          gltf.scene.position.z += 0.02;
           dispatch({ type: 'UPDATE_JUMP', velocity: newVelocity, yPosition: newYPosition });
         }
       }
