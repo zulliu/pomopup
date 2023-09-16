@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW 2019 (64-Bit) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="156.012mm" height="143.72mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 3004.37 2767.65"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str1 {stroke:#E68477;stroke-width:54.35;stroke-miterlimit:22.9256}
+    .str0 {stroke:white;stroke-width:3.85;stroke-miterlimit:22.9256}
+    .fil5 {fill:#1A1A1A}
+    .fil3 {fill:#1A1A1A}
+    .fil0 {fill:#CCCCCC}
+    .fil4 {fill:#D38A63}
+    .fil7 {fill:#E68477}
+    .fil9 {fill:#E68477}
+    .fil2 {fill:#EBEBEB}
+    .fil1 {fill:white}
+    .fil6 {fill:white}
+    .fil8 {fill:#E68477;fill-rule:nonzero}
+   ]]>
+  </style>
+ </defs>
+ <g id="图层_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g id="_2201192249840">
+   <rect class="fil0" x="894.39" y="940.07" width="1706.61" height="1508.95" rx="440.43" ry="417.45"/>
+   <g>
+    <rect class="fil1" x="894.39" y="940.07" width="1215.6" height="1175.27"/>
+    <rect class="fil2" x="1270.86" y="1651.28" width="462.65" height="315.79"/>
+    <rect class="fil3" x="1382.57" y="1651.28" width="239.23" height="163.29"/>
+    <rect class="fil4" x="894.39" y="1087.98" width="489.87" height="312.97"/>
+    <rect class="fil4" x="894.39" y="1277.3" width="204.11" height="391.26"/>
+    <rect class="fil4" x="1905.87" y="1277.3" width="204.11" height="391.26"/>
+    <rect class="fil4" x="894.39" y="940.07" width="489.87" height="156.49"/>
+    <rect class="fil4" x="894.39" y="705.29" width="263.08" height="391.26"/>
+    <rect class="fil5" x="1098.5" y="1251.27" width="145.14" height="299.36"/>
+    <rect class="fil4" x="1620.12" y="1087.98" width="489.87" height="312.97"/>
+    <rect class="fil4" x="1620.12" y="940.07" width="489.87" height="156.49"/>
+    <rect class="fil4" x="1846.91" y="705.29" width="263.08" height="391.26"/>
+    <rect class="fil5" x="1760.73" y="1251.27" width="145.14" height="299.36"/>
+    <rect class="fil6 str0" x="894.39" y="823.62" width="143.94" height="264.36"/>
+    <rect class="fil6 str0" transform="matrix(2.19645E-14 -0.786894 0.84922 2.13402E-14 894.387 1087.98)" width="187.5" height="309.79"/>
+    <rect class="fil6 str0" x="1966.04" y="823.62" width="143.94" height="264.36"/>
+    <rect class="fil6 str0" transform="matrix(-2.19645E-14 -0.786894 -0.84922 2.13402E-14 2109.98 1087.98)" width="187.5" height="309.79"/>
+   </g>
+   <path class="fil7 str1" d="M976.85 318.16l1050.67 0c332.36,0 604.29,271.93 604.29,604.29l0 975.72c0,332.36 -271.93,604.29 -604.29,604.29l-1050.67 0c-332.36,0 -604.29,-271.93 -604.29,-604.29l0 -975.72c0,-332.36 271.93,-604.29 604.29,-604.29zm224.57 -290.99l601.54 0c35.36,0 64.29,28.93 64.29,64.29l0 0c0,35.36 -28.93,64.29 -64.29,64.29l-601.54 0c-35.36,0 -64.29,-28.93 -64.29,-64.29l0 -0c0,-35.36 28.93,-64.29 64.29,-64.29zm-167.87 408.85l937.28 0c296.5,0 539.08,242.58 539.08,539.08l0 870.42c0,296.5 -242.58,539.08 -539.08,539.08l-937.28 0c-296.5,0 -539.08,-242.58 -539.08,-539.08l0 -870.42c0,-296.5 242.58,-539.08 539.08,-539.08z"/>
+   <g>
+    <path class="fil8" d="M568.55 341.42c29.22,-29.4 29.22,-76.88 0,-106.28l-53.51 -53.51c-119.4,-113.9 -307.21,-113.9 -426.61,0 -117.81,117.67 -117.92,308.56 -0.24,426.37 0.08,0.08 0.16,0.16 0.24,0.24l53.51 53.51c14.22,14.11 33.48,21.97 53.51,21.86 19.77,-0.08 38.72,-7.93 52.76,-21.86l320.33 -320.33zm-417.57 53.51l0 0c0.35,-83.26 68.13,-150.46 151.38,-150.11 39.61,0.17 77.56,15.91 105.65,43.84l-212.55 212.55c-28.31,-28.14 -44.31,-66.36 -44.47,-106.28z"/>
+    <path class="fil8" d="M2435.82 335.22c-29.23,-29.4 -29.23,-76.88 0,-106.27l53.51 -53.52c119.4,-113.9 307.21,-113.9 426.61,0 117.81,117.67 117.92,308.56 0.24,426.37 -0.08,0.08 -0.16,0.16 -0.24,0.24l-53.51 53.52c-14.22,14.11 -33.48,21.97 -53.51,21.86 -19.77,-0.08 -38.72,-7.93 -52.76,-21.86l-320.33 -320.33zm417.57 53.51l0 0c-0.35,-83.26 -68.13,-150.46 -151.38,-150.11 -39.61,0.17 -77.56,15.91 -105.65,43.84l212.55 212.55c28.31,-28.14 44.31,-66.36 44.47,-106.28z"/>
+   </g>
+   <g>
+    <rect class="fil9" transform="matrix(0.220968 -0.539963 0.90355 0.369758 519.556 2730.05)" width="830.82" height="170.12" rx="85.06" ry="85.06"/>
+    <rect class="fil9" transform="matrix(-0.220968 -0.539963 -0.90355 0.369758 2484.81 2730.05)" width="830.82" height="170.12" rx="85.06" ry="85.06"/>
+   </g>
+  </g>
+ </g>
+</svg>

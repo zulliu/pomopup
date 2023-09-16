@@ -1,0 +1,12 @@
+/* SideBar.module.css */
+.sidebarContainer > * {
+  transition: transform 1.9s;
+}
+
+.sidebarContainer > :not(:last-child) {
+  transform: translateY(100%);
+}
+
+.sidebarContainer.flex > :not(:last-child) {
+  transform: translateY(0);
+}

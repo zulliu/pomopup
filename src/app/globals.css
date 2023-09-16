@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import '@fortawesome/fontawesome-svg-core/styles.css';
+
+@font-face {
+  font-family: 'EXEPixelPerfect';
+  src: url('/EXEPixelPerfect.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+    background-color: #e2d6d8;
+}
+
+#main-canvas{
+  background-color: #e2d6d8;
+}
+
+#menu-pan{
+  background-color: #e8e8e8;
+}
+.dialogue-blob {
+  position: absolute;
+  width: 100px;
+  padding: 10px;
+  text-align: center;
+  background-color: white;
+  border: 0.1rem solid grey;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translate(-50%, -100%);
+  color: #333;
+}
+.dialogue-blob:after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid white;
+  transform: translateX(-50%);
+}
+
+@layer components {
+  .btn {
+    @apply flex flex-col items-center mx-12 text-3xl tracking-widest font-semibold;
+  }
+}
