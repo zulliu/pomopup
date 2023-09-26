@@ -5,12 +5,13 @@ import React, {
 } from 'react';
 import { RepeatWrapping } from 'three';
 import {
-  Canvas, useFrame, useThree, useLoader,
+  useLoader,
 } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import {
-  OrbitControls, SoftShadows, PointLight, useTexture, SpotLight, useFBX,
+  OrbitControls, SoftShadows, pointLight, useTexture,
 } from '@react-three/drei';
+import { useGlobalState } from '../globalContext';
 
 function Box(props) {
   // Load the required textures.
@@ -57,10 +58,9 @@ function Box(props) {
 }
 
 function Rug(props) {
-  // Load the required textures.
-  const [colorMap] = useTexture([
-    '/carpet3.jpg',
-  ]);
+  const { environmentSettings } = useGlobalState();
+
+  const [colorMap] = useTexture([environmentSettings.rugTexture]);
 
   // Set wrapping and repeat for colorMap
   colorMap.wrapS = colorMap.wrapT = RepeatWrapping;
@@ -117,13 +117,14 @@ const Stand = function () {
     }
   }, [gltf]);
 
-  return <primitive object={gltf.scene} scale={0.1} position={[3.6, 0.02, -3]} rotation={[0, -Math.PI / 2, 0]} />;
+  return <primitive object={gltf.scene} scale={0.1} position={[3.6, 0, -3]} rotation={[0, -Math.PI / 2, 0]} />;
 };
 
 function Wall(props) {
-  const [colorMap] = useTexture([
-    '/wall.jpg',
-  ]);
+  const { environmentSettings } = useGlobalState();
+
+  const [colorMap] = useTexture([environmentSettings.wallTexture]);
+
   colorMap.wrapS = colorMap.wrapT = RepeatWrapping;
   colorMap.anisotropy = 4;
   colorMap.repeat.set(1, 1);
@@ -159,15 +160,13 @@ const Sofa = function () {
           if (child.material.map) {
             child.material.metalness = 0; // 0 means non-metallic
             child.material.roughness = 1; // 0.5 is mid-way between rough and smooth
-            child.displacementMap = colorMap;
-            child.displacementScale = 10;
           }
         }
       });
     }
   }, [gltf, colorMap]);
 
-  return <primitive object={gltf.scene} scale={0.1} position={[-0.2, 0.02, -3.5]} rotation={[0, Math.PI, 0]} />;
+  return <primitive object={gltf.scene} scale={0.1} position={[-0.2, 0, -3.5]} rotation={[0, Math.PI, 0]} />;
 };
 
 function RenderStatic() {
@@ -175,9 +174,9 @@ function RenderStatic() {
     <>
       <SoftShadows size={15} samples={20} />
 
-      <Box position={[1.2, 0, 0]} receiveShadow castShadow />
-      <Rug position={[-0.1, 0.03, -4]} receiveShadow castShadow />
-      <Wall position={[0, 4, -5]} receiveShadow castShadow />
+      <Box position={[1.2, -0.05, 0]} receiveShadow />
+      <Rug position={[-0.1, 0, -4]} receiveShadow />
+      <Wall position={[0, 4, -5]} />
       <Sofa />
       <Stand />
       <Lamp position={[3.6, 2.2, -3.1]} />
@@ -206,14 +205,14 @@ function RenderStatic() {
         shadow-mapSize-height={1024}
       />
       <OrbitControls
-        // makeDefault
-        enablePan={false}
-        enableZoom={false}
-        maxAzimuthAngle={Math.PI / 12}
-        minAzimuthAngle={-Math.PI / 8}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 2.5}
-        rotateSpeed={0.2}
+        makeDefault
+        // enablePan={false}
+        // enableZoom={false}
+        // maxAzimuthAngle={Math.PI / 12}
+        // minAzimuthAngle={-Math.PI / 8}
+        // minPolarAngle={Math.PI / 3}
+        // maxPolarAngle={Math.PI / 2.5}
+        // rotateSpeed={0.2}
       />
     </>
   );

@@ -31,6 +31,11 @@ function Register() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
+        <input
+          className="rounded my-1 p-2"
+          type="password"
+          placeholder="Puppy's name?"
+        />
       </div>
 
       <button

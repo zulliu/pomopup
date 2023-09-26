@@ -1,20 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Canvas, useFrame, useLoader,
 } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
+import { Html, Stats } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ACTIONS, reducer, initialState } from './stateManage';
 import { useGlobalDispatch, useSetSceneHandlers, useGlobalState } from '../globalContext';
+import ItemsScene from './ItemsScene';
 import RenderStatic from './static';
 
 const Scene = function () {
   const gltf = useLoader(GLTFLoader, '/corgi.gltf');
   const tomato = useLoader(GLTFLoader, '/tomato.gltf');
   const setSceneHandlers = useSetSceneHandlers();
-  const globalState = useGlobalState();
-  const { showTomato, showTooltip } = globalState;
+  const {
+    leaving,
+    layingDown,
+    standingUp,
+    velocity,
+    yPosition,
+    position,
+    rotation,
+    hasReset,
+    isJumping,
+    comingBack,
+    showTomato,
+    showTooltip,
+  } = useGlobalState();
   const dispatch = useGlobalDispatch();
+  const frameCountRef = useRef(0);
 
   const JUMP_VELOCITY = 0.1;
   const GRAVITY = 0.01;
@@ -51,108 +65,100 @@ const Scene = function () {
 
     setSceneHandlers(handlers);
   }, [setSceneHandlers]);
+
+  const resetFrameCount = () => {
+    frameCountRef.current = 0;
+  };
+
+  const upDown = (frameCount, speedRate = 1) => {
+    const frameForJump = frameCount % 30;
+    const newVelocity = JUMP_VELOCITY - GRAVITY * frameForJump;
+    let newYPosition = gltf.scene.position.y + newVelocity / 4;
+    if (newYPosition <= 0) {
+      newYPosition = 0;
+    }
+    gltf.scene.position.y = newYPosition;
+  };
   useFrame(() => {
     if (gltf && gltf.scene) {
       // Jumping Logic
-      if (!globalState.leaving && !globalState.layingDown && !globalState.standingUp) {
-        if (globalState.velocity && globalState.jumpCount < 3) {
-          let newVelocity = globalState.velocity - GRAVITY;
-          let newYPosition = globalState.yPosition + newVelocity;
 
-          if (newYPosition <= 0) {
-            newVelocity = JUMP_VELOCITY;
-            newYPosition = 0;
-            dispatch({ type: 'INCREMENT_JUMP_COUNT' });
-          }
-          gltf.scene.position.y = newYPosition / 2;
-          dispatch({ type: 'UPDATE_JUMP', velocity: newVelocity, yPosition: newYPosition });
+      if (isJumping) {
+        if (frameCountRef.current < 120) {
+          upDown(frameCountRef.current, 2);
+          frameCountRef.current += 1;
+        } else if (frameCountRef.current === 120) {
+          dispatch({ type: ACTIONS.RESET_MESH_STATE });
+          resetFrameCount();
         }
       }
 
       // Leaving Logic
-      if (globalState.leaving) {
-        if (globalState.frameCount < 30) {
+      if (leaving) {
+        if (frameCountRef.current < 30) {
           gltf.scene.rotation.y += (Math.PI / 2) / 30;
-          const newVelocity = JUMP_VELOCITY - GRAVITY * globalState.frameCount;
-          let newYPosition = gltf.scene.position.y + newVelocity;
-          if (newYPosition <= 0) {
-            newYPosition = 0;
-          }
-          gltf.scene.position.y = newYPosition;
-        } else if (globalState.frameCount < 180) {
+          upDown(frameCountRef.current);
+        } else if (frameCountRef.current < 180) {
           gltf.scene.position.x += 5 / 120;
-          let newVelocity = globalState.velocity - GRAVITY;
-          let newYPosition = globalState.yPosition + newVelocity / 2;
-          if (newYPosition <= 0) {
-            newVelocity = JUMP_VELOCITY;
-            newYPosition = 0;
-          }
-          gltf.scene.position.y = newYPosition;
-          dispatch({ type: 'UPDATE_JUMP', velocity: newVelocity, yPosition: newYPosition });
+          upDown(frameCountRef.current);
+        } else if (frameCountRef.current === 180) {
+          resetFrameCount();
+          dispatch({ type: ACTIONS.RESET_LEAVE });
         }
-        dispatch({ type: 'INCREMENT_FRAME' });
+        frameCountRef.current += 1;
       }
 
       // Coming Back Logic
-      if (globalState.comingBack) {
+      if (comingBack) {
         gltf.scene.position.z = 0;
-        if (globalState.frameCount <= 120) {
+        if (frameCountRef.current <= 120) {
           gltf.scene.position.x -= 6.2 / 120;
           gltf.scene.rotation.y = -Math.PI / 2;
-          let newVelocity = globalState.velocity - GRAVITY;
-          let newYPosition = globalState.yPosition + newVelocity / 2;
-          if (newYPosition <= 0) {
-            newVelocity = JUMP_VELOCITY;
-            newYPosition = 0;
-          }
-          gltf.scene.position.y = newYPosition;
-          dispatch({ type: 'UPDATE_JUMP', velocity: newVelocity, yPosition: newYPosition });
-        } else if (globalState.frameCount < 150) {
+          upDown(frameCountRef.current);
+        } else if (frameCountRef.current < 150) {
           gltf.scene.rotation.y += (Math.PI / 2) / 30;
-          gltf.scene.position.y = 0;
-        } else if (globalState.frameCount === 240) {
-          // dispatch({ type: ACTIONS.RESET_MESH_STATE });
+          upDown(frameCountRef.current);
+        } else if (frameCountRef.current === 240) {
+          resetFrameCount();
+          dispatch({ type: ACTIONS.RESET_BACK });
         }
-        dispatch({ type: 'INCREMENT_FRAME' });
+        frameCountRef.current += 1;
       }
       if (tomato && tomato.scene) {
         tomato.scene.visible = showTomato;
       }
+
       // Laying Down Logic
-      if (globalState.layingDown && globalState.frameCount <= 540) {
-        if (globalState.frameCount < 360) {
+      if (layingDown && frameCountRef.current <= 540) {
+        if (frameCountRef.current < 360) {
           // Jumping logic repeated every 30 frames
-          const frameForJump = globalState.frameCount % 30;
-          const newVelocity = JUMP_VELOCITY - GRAVITY * frameForJump;
-          let newYPosition = gltf.scene.position.y + newVelocity / 4;
-          if (newYPosition <= 0) {
-            newYPosition = 0;
-          }
+          upDown(frameCountRef.current);
           gltf.scene.rotation.y -= (Math.PI / 2) / 120;
-          gltf.scene.position.y = newYPosition;
-        } else if (globalState.frameCount > 450) {
+        } else if (frameCountRef.current > 450) {
           gltf.scene.position.y += 0.005;
 
           gltf.scene.rotation.x += (Math.PI / 2) / 90; // Reset the rotation to original state
         }
-        if (globalState.frameCount === 540) {
+        if (frameCountRef.current === 540) {
+          resetFrameCount();
+
           dispatch({ type: ACTIONS.TOGGLE_TOOLTIP, payload: { showTooltip: true } });
           dispatch({ type: ACTIONS.LAY_DOWN, payload: { layingDown: false } });
         }
-
-        dispatch({ type: 'INCREMENT_FRAME' });
+        frameCountRef.current += 1;
+        // dispatch({ type: 'INCREMENT_FRAME' });
       }
 
       // Standing Up Logic
-      if (globalState.standingUp && globalState.frameCount <= 120) {
-        if (globalState.frameCount === 1) {
+      if (standingUp && frameCountRef.current < 120) {
+        if (frameCountRef.current === 1) {
           dispatch({ type: ACTIONS.TOGGLE_TOOLTIP, payload: { showTooltip: false } });
         }
-        if (globalState.frameCount < 90) {
+        if (frameCountRef.current < 90) {
           gltf.scene.rotation.x -= Math.PI / 180;
           gltf.scene.position.y -= 0.005;
-        } else if (globalState.frameCount < 120) {
-          const newVelocity = JUMP_VELOCITY - GRAVITY * globalState.frameCount;
+        } else if (frameCountRef.current < 120) {
+          const newVelocity = JUMP_VELOCITY - GRAVITY * frameCountRef.current;
           let newYPosition = gltf.scene.position.y + newVelocity;
           if (newYPosition <= 0) {
             newYPosition = 0;
@@ -160,19 +166,21 @@ const Scene = function () {
           gltf.scene.rotation.y -= (Math.PI / 2) / 30;
           gltf.scene.position.y = newYPosition;
         }
-        dispatch({ type: 'INCREMENT_FRAME' });
-        if (globalState.frameCount === 120) {
-          // dispatch({ type: ACTIONS.RESET_MESH_STATE });
+        frameCountRef.current += 1;
+        // dispatch({ type: 'INCREMENT_FRAME' });
+        if (frameCountRef.current === 120) {
+          resetFrameCount();
+          dispatch({ type: ACTIONS.RESET_MESH_STATE });
         }
       }
 
       // Reset Logic
-      if (globalState.hasReset) {
-        gltf.scene.position.x = globalState.position.x;
-        gltf.scene.position.y = globalState.position.y;
-        gltf.scene.position.z = globalState.position.z;
-        gltf.scene.rotation.x = globalState.rotation.x;
-        gltf.scene.rotation.y = globalState.rotation.y;
+      if (hasReset) {
+        gltf.scene.position.x = position.x;
+        gltf.scene.position.y = position.y;
+        gltf.scene.position.z = position.z;
+        gltf.scene.rotation.x = rotation.x;
+        gltf.scene.rotation.y = rotation.y;
         dispatch({ type: 'RESET_APPLIED' });
       }
     }
@@ -198,11 +206,11 @@ const Scene = function () {
   }, [gltf]);
 
   return (
-    <group position={[globalState.position.x, globalState.position.y, globalState.position.z]}>
+    <group position={[position.x, position.y, position.z]}>
       <primitive
         object={gltf.scene}
         scale={0.1}
-        rotation={[0, globalState.rotation.y, 0]}
+        rotation={[0, rotation.y, 0]}
       >
         <Html
           position={[15, 15, 0]}
@@ -221,8 +229,11 @@ const Scene = function () {
 };
 
 function RenderMain() {
+  const globalState = useGlobalState();
+  const { userItems } = globalState;
   return (
     <Canvas
+      // frameloop="demand"
       id="main-canvas"
       dpr={[1, 2]}
       camera={{ position: [0, 2, 6] }}
@@ -230,6 +241,8 @@ function RenderMain() {
     >
       <Scene />
       <RenderStatic />
+      <ItemsScene items={userItems} />
+      <Stats />
     </Canvas>
   );
 }

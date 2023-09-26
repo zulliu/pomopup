@@ -8,6 +8,7 @@ import SideBar from './components/sideBar';
 import { GlobalProvider, useGlobalState } from './globalContext';
 import Login from './components/login';
 import Register from './components/register';
+import ItemIndex from './components/itemIndex';
 
 export default function Home() {
   const [isCanvasReady, setIsCanvasReady] = useState(true);

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faHome, faBagShopping, faClipboard, faGear, faArrowRightFromBracket,
+  faHome, faBagShopping, faClipboard, faBook, faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import LogList from './logList';
+import ItemIndex from './itemIndex';
+import Shop from './shop';
 import {
   useGlobalState,
 } from '../globalContext';
@@ -35,7 +37,8 @@ function CustomButton({
 function SideBar({ setIsLoggedIn }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showLogList, setShowLogList] = useState(false);
-  const globalState = useGlobalState();
+  const [showItemIndex, setShowItemIndex] = useState(false);
+  const [showShop, setShowShop] = useState(false);
 
   const handleLogout = () => {
     Cookies.remove('userId');
@@ -45,24 +48,56 @@ function SideBar({ setIsLoggedIn }) {
   return (
     <div className="h-full flex flex-col justify-end items-center space-y-6 pb-4">
       <div className="relative">
+        { showShop && (
+        <div className="absolute left-full top-0 z-20 ">
+          <Shop onClose={() => setShowShop(false)} />
+        </div>
+        )}
         { showLogList && (
         <div className="absolute left-full top-0 z-20 ">
-          <LogList logs={globalState.logs} onClose={() => setShowLogList(false)} />
+          <LogList onClose={() => setShowLogList(false)} />
+        </div>
+        )}
+        { showItemIndex && (
+        <div className="absolute left-full top-0 z-20 ">
+          <ItemIndex onClose={() => setShowItemIndex(false)} />
         </div>
         )}
       </div>
 
       {isExpanded && (
         <div className="h-5/12 bg-white w-4/5 rounded-lg flex flex-col items-center space-y-6 py-4">
-          <CustomButton icon={faBagShopping} onClick={() => {}} primary transparent />
+          <CustomButton
+            icon={faBagShopping}
+            onClick={() => {
+              setShowShop(!showShop);
+              setShowItemIndex(false);
+              setShowLogList(false);
+            }}
+            primary
+            transparent
+          />
           <CustomButton
             icon={faClipboard}
-            onClick={() => setShowLogList(!showLogList)}
+            onClick={() => {
+              setShowLogList(!showLogList);
+              setShowItemIndex(false);
+              setShowShop(false);
+            }}
             primary
             transparent
           />
 
-          <CustomButton icon={faGear} onClick={() => {}} primary transparent />
+          <CustomButton
+            icon={faBook}
+            onClick={() => {
+              setShowItemIndex(!showItemIndex);
+              setShowLogList(false);
+              setShowShop(false);
+            }}
+            primary
+            transparent
+          />
           <CustomButton icon={faArrowRightFromBracket} onClick={handleLogout} primary transparent />
         </div>
       )}

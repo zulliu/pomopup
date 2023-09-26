@@ -15,8 +15,12 @@ CREATE TABLE TimerLogs (
 
 CREATE TABLE Items (
     item_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    scale FLOAT,
+    position FLOAT[]
 );
+
 
 CREATE TABLE UserItems (
     user_item_id SERIAL PRIMARY KEY,

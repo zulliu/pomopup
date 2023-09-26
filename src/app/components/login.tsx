@@ -24,12 +24,26 @@ function Login({ setIsLoggedIn }) {
             tomatoNumber: decoded.tomato_number,
           },
         });
+
         setIsLoggedIn(true);
         try {
           const userId = decoded.user_id;
+          // fetch log
           const logs = await axios.get(`/api/getLogs?userId=${userId}`);
           dispatch({ type: 'SET_LOGS', payload: logs.data });
+
+          // fetch user-specific items
+          const itemsResponse = await axios.get(`/api/getItemsByUserId?userId=${userId}`);
+          dispatch({ type: 'SET_USER_ITEMS', payload: itemsResponse.data });
+          Cookies.set('userItems', JSON.stringify(itemsResponse.data));
         } catch (error) {
+        }
+        try {
+          const itemsResponse = await axios.get('/api/getAllItems');
+          dispatch({ type: 'SET_ITEMS', payload: itemsResponse.data });
+          Cookies.set('items', JSON.stringify(itemsResponse.data));
+        } catch (error) {
+          console.error('Error fetching items:', error);
         }
       }
     } catch (error) {

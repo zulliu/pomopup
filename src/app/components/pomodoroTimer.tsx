@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlay, faPause, faRefresh, faCouch, faBed,
 } from '@fortawesome/free-solid-svg-icons';
-import { data } from 'autoprefixer';
+import Cookies from 'js-cookie';
 import {
   useGlobalDispatch, useSceneHandlers, useUserData, useGlobalState,
 } from '../globalContext';
@@ -46,6 +46,33 @@ function PomodoroTimer({ setMessage }) {
     secondsRef.current = seconds;
   }, [minutes, seconds]);
 
+  const getRandomItem = () => {
+    const items = Cookies.get('items') ? JSON.parse(Cookies.get('items')) : [];
+
+    const randomIndex = Math.floor(Math.random() * (items.length - 1)) + 1;
+    return items[randomIndex];
+  };
+
+  const updateUserItemsWithRandomItem = (randomItem) => {
+    const userItems = Cookies.get('userItems') ? JSON.parse(Cookies.get('userItems')) : [];
+
+    // Check if user already has this item
+    const existingItem = userItems.find((item) => item.item_id === randomItem.item_id);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      userItems.push({
+        user_id: userData?.user_id,
+        ...randomItem,
+        quantity: 1,
+      });
+    }
+
+    Cookies.set('userItems', JSON.stringify(userItems));
+    dispatch({ type: 'SET_USER_ITEMS', payload: userItems });
+  };
+
   const startTimer = () => {
     setIsActive(true);
     if (!isPause) {
@@ -69,7 +96,7 @@ function PomodoroTimer({ setMessage }) {
     setMessage('Have a good rest!');
   };
 
-  const resetTimer = (taskEnd = false, itemname = 'tomato') => {
+  const resetTimer = (taskEnd = false) => {
     if (!isActive) {
       return;
     }
@@ -77,6 +104,16 @@ function PomodoroTimer({ setMessage }) {
     sceneHandlers.back();
     setMinutes(1);
     setSeconds(0);
+    if (!taskEnd) {
+      setMessage('Leo Rushed Home!');
+    } else if (Math.random() > 0.2) {
+      setTimeout(() => {
+        setMessage('Wait...', 100);
+        const randomItem = getRandomItem();
+        updateUserItemsWithRandomItem(randomItem);
+        setMessage(`There's something else... Leo brought you a ${randomItem.name}!`);
+      }, 5000);
+    }
   };
 
   const resetRest = () => {
@@ -107,10 +144,12 @@ function PomodoroTimer({ setMessage }) {
 
   useEffect(() => {
     if (sceneHandlers.jump) {
-      sceneHandlers.jump();
-      setMessage('...Leo is so happy to see you!', 70);
+      setTimeout(() => {
+        sceneHandlers.jump();
+        setMessage('...Leo is so happy to see you!', 10);
+      }, 500);
     }
-  }, [sceneHandlers.jump]);
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -139,7 +178,6 @@ function PomodoroTimer({ setMessage }) {
 
             try {
               const userId = userData?.user_id;
-              console.log(userData);
               axios.post('/api/incrementTomato', { userId }).then((response) => {
                 if (response.status === 200) {
                   const newTomatoNumber = globalState.user.tomatoNumber + 1;

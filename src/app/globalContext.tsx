@@ -20,19 +20,24 @@ function getUserDataFromToken() {
 }
 
 const userDataFromToken = getUserDataFromToken();
+const itemsFromCookie = Cookies.get('items') ? JSON.parse(Cookies.get('items')) : [];
+const userItemsFromCookie = Cookies.get('userItems') ? JSON.parse(Cookies.get('userItems')) : [];
 
 const initialGlobalState = {
+
   user: {
     id: userDataFromToken?.user_id || null,
     username: userDataFromToken?.username || null,
     tomatoNumber: userDataFromToken?.tomato_number || 0,
   },
+  items: itemsFromCookie,
+  userItems: userItemsFromCookie,
   ...initialState,
 };
 
 function GlobalProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialGlobalState);
-
+  const [userData, setUserData] = useState(getUserDataFromToken());
   const [sceneHandlers, setSceneHandlers] = useState({
     jump: null,
     leave: null,
@@ -42,7 +47,7 @@ function GlobalProvider({ children }) {
   });
 
   return (
-    <UserDataContext.Provider value={userDataFromToken}>
+    <UserDataContext.Provider value={userData}>
       <GlobalStateContext.Provider value={state}>
         <GlobalDispatchContext.Provider value={dispatch}>
           <SceneHandlersContext.Provider value={sceneHandlers}>
