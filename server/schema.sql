@@ -28,3 +28,9 @@ CREATE TABLE UserItems (
     item_id INTEGER REFERENCES Items(item_id),
     quantity INTEGER DEFAULT 0
 );
+
+CREATE TABLE puppy (
+    puppy_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    mesh_id VARCHAR(255)
+);
