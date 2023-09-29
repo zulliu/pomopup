@@ -101,20 +101,7 @@ export function reducer(state, action) {
     case ACTIONS.INCREMENT_TOMATO:
       return {
         ...state,
-        user: {
-          ...state.user,
-          tomatoNumber: state.user.tomatoNumber + 1,
-        },
-      };
-    case 'SET_USER':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          id: action.payload.id,
-          username: action.payload.username,
-          tomatoNumber: action.payload.tomatoNumber,
-        },
+        tomatoNumber: state.tomatoNumber + 1,
       };
 
     case 'SET_LOGGED_IN':
@@ -158,10 +145,7 @@ export function reducer(state, action) {
     case ACTIONS.SET_TOMATO_NUMBER:
       return {
         ...state,
-        user: {
-          ...state.user,
-          tomatoNumber: action.payload.tomatoNumber,
-        },
+        tomatoNumber: action.payload,
       };
     case 'SET_ITEMS':
       return {
@@ -180,16 +164,13 @@ export function reducer(state, action) {
       };
     case ACTIONS.PURCHASE_ITEM: {
       const item = state.shopItems.find((i) => i.id === action.payload.itemId);
-      if (!item || state.user.tomatoNumber < item.price) {
+      if (!item || state.tomatoNumber < item.price) {
         console.warn('Not enough tomatoes or item not found!');
         return state; // If the user doesn't have enough tomatoes or item is not found
       }
       return {
         ...state,
-        user: {
-          ...state.user,
-          tomatoNumber: state.user.tomatoNumber - item.price, // Deduct tomatoes
-        },
+        tomatoNumber: state.tomatoNumber - item.price, // Deduct tomatoes
         userItems: [...state.userItems, item], // Add the purchased item
       };
     }

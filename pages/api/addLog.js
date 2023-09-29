@@ -1,4 +1,3 @@
-// /api/addLog.js
 import pool from '../../src/app/lib/db';
 
 export default async (req, res) => {
@@ -13,7 +12,6 @@ export default async (req, res) => {
     const logId = result.rows[0].log_id;
     res.status(200).json({ logId });
   } catch (err) {
-    console.error('Database error:', err);
     res.status(500).send('Server error');
   }
 };

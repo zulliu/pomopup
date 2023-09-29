@@ -7,9 +7,6 @@ import {
 import LogList from './logList';
 import ItemIndex from './itemIndex';
 import Shop from './shop';
-import {
-  useGlobalState,
-} from '../globalContext';
 
 function CustomButton({
   icon, onClick, primary = false, transparent = false,
@@ -41,7 +38,8 @@ function SideBar({ setIsLoggedIn }) {
   const [showShop, setShowShop] = useState(false);
 
   const handleLogout = () => {
-    Cookies.remove('userId');
+    Cookies.remove('token');
+    Cookies.remove('user_id');
     setIsLoggedIn(false);
   };
 

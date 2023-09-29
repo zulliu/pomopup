@@ -10,6 +10,20 @@ import {
 } from '../globalContext';
 import { ACTIONS } from './stateManage';
 
+const TIMER_SETTING = {
+  POMO: 25,
+  SHORT: 5,
+  LONG: 15,
+  DECREASE: 59,
+};
+
+const TIMER_TEST = {
+  POMO: 1,
+  SHORT: 1,
+  LONG: 1,
+  DECREASE: 8,
+};
+
 function CustomButton({
   icon, label, onClick, primary = true,
 }) {
@@ -27,7 +41,8 @@ function CustomButton({
 }
 
 function PomodoroTimer({ setMessage }) {
-  const [minutes, setMinutes] = useState(1);
+  const TIMER = TIMER_TEST;
+  const [minutes, setMinutes] = useState(TIMER.POMO);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isPause, setPause] = useState(false);
@@ -35,11 +50,12 @@ function PomodoroTimer({ setMessage }) {
 
   const sceneHandlers = useSceneHandlers();
   const dispatch = useGlobalDispatch();
-  const userData = useUserData();
   const globalState = useGlobalState();
 
   const minutesRef = useRef(minutes);
   const secondsRef = useRef(seconds);
+  const userId = Cookies.get('user_id');
+  const puppyName = Cookies.get('puppy_name');
 
   useEffect(() => {
     minutesRef.current = minutes;
@@ -63,7 +79,7 @@ function PomodoroTimer({ setMessage }) {
       existingItem.quantity += 1;
     } else {
       userItems.push({
-        user_id: userData?.user_id,
+        user_id: userId,
         ...randomItem,
         quantity: 1,
       });
@@ -79,7 +95,7 @@ function PomodoroTimer({ setMessage }) {
       sceneHandlers.leave();
     }
     setPause(false);
-    setMessage('Timer start. Leo has left the house.');
+    setMessage(`Timer start. ${puppyName} has left the house.`);
   };
 
   const pauseTimer = () => {
@@ -102,16 +118,16 @@ function PomodoroTimer({ setMessage }) {
     }
     setIsActive(false);
     sceneHandlers.back();
-    setMinutes(1);
+    setMinutes(TIMER.POMO);
     setSeconds(0);
     if (!taskEnd) {
-      setMessage('Leo Rushed Home!');
+      setMessage(`${puppyName} Rushed Home!`);
     } else if (Math.random() > 0.2) {
       setTimeout(() => {
         setMessage('Wait...', 100);
         const randomItem = getRandomItem();
         updateUserItemsWithRandomItem(randomItem);
-        setMessage(`There's something else... Leo brought you a ${randomItem.name}!`);
+        setMessage(`There's something else... ${puppyName} brought you a ${randomItem.name}!`);
       }, 5000);
     }
   };
@@ -123,20 +139,19 @@ function PomodoroTimer({ setMessage }) {
     sceneHandlers.standUp();
     setMessage('Welcome back from your  rest!');
     setRest(false);
-    setMinutes(1);
+    setMinutes(TIMER.SHORT);
     setSeconds(0);
   };
 
   const addLog = async (startTime, endTime) => {
     try {
-      await axios.post('/api/addLog', { userId: userData?.user_id, startTime, endTime });
+      await axios.post('/api/addLog', { userId, startTime, endTime });
     } catch (error) {
     }
   };
 
   const fetchLogs = async () => {
     try {
-      const userId = userData?.user_id;
       const logs = await axios.get(`/api/getLogs?userId=${userId}`);
       dispatch({ type: 'SET_LOGS', payload: logs.data });
     } catch (error) {}
@@ -146,7 +161,7 @@ function PomodoroTimer({ setMessage }) {
     if (sceneHandlers.jump) {
       setTimeout(() => {
         sceneHandlers.jump();
-        setMessage('...Leo is so happy to see you!', 10);
+        setMessage(`...${puppyName} is so happy to see you!`, 10);
       }, 500);
     }
   }, []);
@@ -164,7 +179,7 @@ function PomodoroTimer({ setMessage }) {
             setIsActive(false);
           } else {
             setMinutes((prevMinutes) => prevMinutes - 1);
-            setSeconds(7);
+            setSeconds(TIMER.DECREASE);
           }
         }
 
@@ -175,26 +190,22 @@ function PomodoroTimer({ setMessage }) {
             const startTime = new Date(Date.now()
               - (minutes * 60 + seconds) * 1000).toLocaleString();
             const endTime = new Date().toLocaleString();
-
             try {
-              const userId = userData?.user_id;
               axios.post('/api/incrementTomato', { userId }).then((response) => {
                 if (response.status === 200) {
-                  const newTomatoNumber = globalState.user.tomatoNumber + 1;
+                  const newTomatoNumber = globalState.tomatoNumber + 1;
                   dispatch({ type: ACTIONS.SET_TOMATO_VISIBILITY, payload: true });
 
                   dispatch({
                     type: ACTIONS.SET_TOMATO_NUMBER,
-                    payload: { tomatoNumber: newTomatoNumber },
+                    payload: newTomatoNumber,
                   });
-                  setMessage('Task complete, Leo\'s back! Leo brought you back a Tomato!');
+                  setMessage(`Task complete, ${puppyName}'s back! ${puppyName} brought you back a Tomato!`);
                   addLog(startTime, endTime);
                   fetchLogs();
                 }
               });
-            } catch (error) {
-              console.error(error);
-            }
+            } catch (error) {}
             resetTimer(true);
           } else {
             resetRest();

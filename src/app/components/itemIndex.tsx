@@ -26,7 +26,7 @@ function ItemIndex() {
   const { userItems } = useGlobalState(); // Get user items from the global state
 
   return (
-    <div className="absolute w-[38rem] h-[36rem] -top-40 left-16 z-20 bg-white opacity-70 rounded-lg overflow-y-auto">
+    <div className="absolute w-[38rem] h-[36rem] -top-40 left-16 z-20 bg-white opacity-80 rounded-lg overflow-y-auto">
       <p className="ml-60 text-3xl mt-6">Item Index</p>
 
       <Card className="h-full w-11/12 mx-auto overflow-scroll text-2xl">

@@ -37,8 +37,9 @@ function Shop() {
   const dispatch = useGlobalDispatch();
   const globalState = useGlobalState();
   const handlePurchase = (item) => {
-    const newTomato = globalState?.user.tomatoNumber - item.price;
+    const newTomato = globalState?.tomatoNumber - item.price;
 
+    console.log(item, item.name);
     if (newTomato < 0) {
       alert("You don't have enough tomatoes!");
       return;
@@ -54,10 +55,23 @@ function Shop() {
         type: ACTIONS.SET_WALL_TEXTURE,
         payload: item.image,
       });
+    } else if (item.name === 'Collie') {
+      dispatch({
+        type: ACTIONS.SWITCH_DOG,
+        payload: 'collie',
+      });
     }
     dispatch({
       type: ACTIONS.SET_TOMATO_NUMBER,
-      payload: { tomatoNumber: newTomato },
+      payload: newTomato,
+    });
+    dispatch({
+      type: ACTIONS.ADD_PURCHASED_ITEM,
+      payload: item.name,
+    });
+    dispatch({
+      type: ACTIONS.SET_TOMATO_NUMBER,
+      payload: newTomato,
     });
 
     dispatch({
@@ -98,6 +112,29 @@ function Shop() {
               </Button>
             </div>
           ))}
+          <div key="dog" className="border p-4 rounded-lg items-center">
+            <img src="mobi.png" alt="mobi.png" className="mx-auto w-32 h-32 object-cover rounded-lg" />
+            <Typography variant="small" color="blue-gray" className="font-normal text-center mt-2">
+              A Collie
+            </Typography>
+            <Typography variant="small" color="blue-gray" className="font-normal text-center">
+              Price:
+              {' '}
+              30
+              {' '}
+              Tomato
+            </Typography>
+            <Typography variant="small" color="blue-gray" className="font-normal text-center mt-1">
+              {'It\'s time to bring home a new dog!'}
+            </Typography>
+            <Button
+              className="mx-16 bg-primary"
+              onClick={() => handlePurchase({ name: 'collie', price: 30 })}
+              disabled={globalState.purchasedItems.includes('mobi')}
+            >
+              {globalState.purchasedItems.includes('mobi') ? 'Purchased' : 'Purchase'}
+            </Button>
+          </div>
         </div>
       </Card>
     </div>

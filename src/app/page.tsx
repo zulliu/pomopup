@@ -5,15 +5,23 @@ import Cookies from 'js-cookie';
 import Canvas from './components/canvas';
 import MenuPan from './components/menupan';
 import SideBar from './components/sideBar';
-import { GlobalProvider, useGlobalState } from './globalContext';
+import { GlobalProvider } from './globalContext';
 import Login from './components/login';
 import Register from './components/register';
-import ItemIndex from './components/itemIndex';
 
-export default function Home() {
-  const [isCanvasReady, setIsCanvasReady] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+interface RegisterProps {
+  setIsRegistering: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface LoginProps {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Home() {
+  const [isCanvasReady, setIsCanvasReady] = useState<boolean>(true);
+  const [isRegistering, setIsRegistering] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoggedIn(!!Cookies.get('token'));
@@ -31,7 +39,7 @@ export default function Home() {
             <Login setIsLoggedIn={setIsLoggedIn} />
           )}
           <div className="mt-4 mx-auto items-center justify-center">
-            <button className="mx-auto" onClick={() => setIsRegistering(!isRegistering)}>
+            <button type="button" className="mx-auto" onClick={() => setIsRegistering(!isRegistering)}>
               {isRegistering ? 'Have an account? Login' : "Don't have an account? Register"}
             </button>
           </div>
@@ -39,9 +47,9 @@ export default function Home() {
         </div>
 
       ) : (
-        <main className="flex h-screen w-full items-center justify-between font-exe-pixel">
+        <main className="flex h-screen w-full items-center justify-center font-exe-pixel">
           {isCanvasReady ? (
-            <div className="h-full flex w-11/12 max-w-screen-xl mx-auto ">
+            <div className="h-full flex w-11/12">
               <div className="w-1/12">
                 <SideBar setIsLoggedIn={setIsLoggedIn} />
               </div>
@@ -61,3 +69,5 @@ export default function Home() {
     </GlobalProvider>
   );
 }
+
+export default Home;

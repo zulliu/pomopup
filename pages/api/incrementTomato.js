@@ -3,7 +3,6 @@ import pool from '../../src/app/lib/db';
 export default async (req, res) => {
   try {
     const { userId } = req.body;
-    console.log(userId);
     const result = await pool.query('UPDATE users SET tomato_number = tomato_number + 1 WHERE user_id = $1 RETURNING tomato_number', [userId]);
 
     if (result.rowCount === 0) {

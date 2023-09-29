@@ -9,20 +9,16 @@ function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useGlobalDispatch();
-
   const handleLogin = async () => {
     try {
       const response = await axios.post('/api/login', { username, password });
       if (response.status === 200) {
-        Cookies.set('token', response.data.token, { httpOnly: false });
         const decoded = jwt.decode(response.data.token);
+        Cookies.set('token', response.data.token, { httpOnly: false });
+        Cookies.set('user_id', decoded.user_id);
         dispatch({
-          type: 'SET_USER',
-          payload: {
-            id: decoded.user_id,
-            username: decoded.username,
-            tomatoNumber: decoded.tomato_number,
-          },
+          type: 'SET_TOMATO_NUMBER',
+          payload: decoded.tomato_number,
         });
 
         setIsLoggedIn(true);
@@ -36,8 +32,7 @@ function Login({ setIsLoggedIn }) {
           const itemsResponse = await axios.get(`/api/getItemsByUserId?userId=${userId}`);
           dispatch({ type: 'SET_USER_ITEMS', payload: itemsResponse.data });
           Cookies.set('userItems', JSON.stringify(itemsResponse.data));
-        } catch (error) {
-        }
+        } catch (error) {}
         try {
           const itemsResponse = await axios.get('/api/getAllItems');
           dispatch({ type: 'SET_ITEMS', payload: itemsResponse.data });
@@ -46,8 +41,7 @@ function Login({ setIsLoggedIn }) {
           console.error('Error fetching items:', error);
         }
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (

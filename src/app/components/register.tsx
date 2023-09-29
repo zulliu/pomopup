@@ -4,12 +4,15 @@ import axios from 'axios';
 function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState(''); // To display feedback to the user
+  const [message, setMessage] = useState('');
+  const [puppyName, setPuppyName] = useState('');
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('/api/register', { username, password });
-      setMessage(response.data);
+      const response = await axios.post('/api/register', { username, password, puppyName });
+      setMessage(response.data.message);
+      const { userId } = response.data;
+      await axios.post('/api/addPuppy', { user_id: userId, mesh_id: 1, puppy_name: puppyName });
     } catch (error) {
       setMessage('Registration failed. Please try again.');
     }
@@ -33,8 +36,8 @@ function Register() {
         />
         <input
           className="rounded my-1 p-2"
-          type="password"
           placeholder="Puppy's name?"
+          onChange={(e) => setPuppyName(e.target.value)}
         />
       </div>
 

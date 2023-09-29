@@ -26,7 +26,6 @@ export default async (req, res) => {
       res.status(401).send('Invalid credentials');
     }
   } catch (err) {
-    console.log(err)
     res.status(500).send('Server error');
   }
 };

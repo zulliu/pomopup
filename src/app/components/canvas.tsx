@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Canvas, useFrame, useLoader,
 } from '@react-three/fiber';
@@ -10,15 +10,13 @@ import ItemsScene from './ItemsScene';
 import RenderStatic from './static';
 
 const Scene = function () {
-  const gltf = useLoader(GLTFLoader, '/corgi.gltf');
+  const gltf = useLoader(GLTFLoader, '/collie.gltf');
   const tomato = useLoader(GLTFLoader, '/tomato.gltf');
   const setSceneHandlers = useSetSceneHandlers();
   const {
     leaving,
     layingDown,
     standingUp,
-    velocity,
-    yPosition,
     position,
     rotation,
     hasReset,
@@ -29,6 +27,7 @@ const Scene = function () {
   } = useGlobalState();
   const dispatch = useGlobalDispatch();
   const frameCountRef = useRef(0);
+  const [tooltipText, setTooltipText] = useState('zzZZ');
 
   const JUMP_VELOCITY = 0.1;
   const GRAVITY = 0.01;
@@ -205,6 +204,23 @@ const Scene = function () {
     }
   }, [gltf]);
 
+  useEffect(() => {
+    let interval;
+
+    if (showTooltip) {
+      // Start interval only when the tooltip is visible
+      interval = setInterval(() => {
+        setTooltipText((prevText) => (prevText === 'zzZZ' ? 'ZZzz' : 'zzZZ'));
+      }, 1000);
+    } else {
+      // Clear interval when the tooltip is not visible
+      clearInterval(interval);
+    }
+
+    // Clean up the interval when the component unmounts or showTooltip changes
+    return () => clearInterval(interval);
+  }, [showTooltip]);
+
   return (
     <group position={[position.x, position.y, position.z]}>
       <primitive
@@ -212,17 +228,10 @@ const Scene = function () {
         scale={0.1}
         rotation={[0, rotation.y, 0]}
       >
-        <Html
-          position={[15, 15, 0]}
-          distanceFactor={15}
-        >
-          {showTooltip
-          && (
-          <div>
-            zzZZ
-          </div>
-          )}
+        <Html position={[15, 15, 0]} distanceFactor={15}>
+          {showTooltip && <div>{tooltipText}</div>}
         </Html>
+
       </primitive>
     </group>
   );
@@ -242,7 +251,6 @@ function RenderMain() {
       <Scene />
       <RenderStatic />
       <ItemsScene items={userItems} />
-      <Stats />
     </Canvas>
   );
 }
