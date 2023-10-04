@@ -10,6 +10,7 @@ This web application provides a Pomodoro timer integrated with fun interactions 
 - **Tomato Reward System:** Earn tomatoes after completing Pomodoro sessions and trade for room decoration.
 - **Mysterious Item Collection:** Discover and collect intriguing items scattered throughout the world, each with its own unique backstory.
 - **Item Index System:** Organize and view your collected treasures in a comprehensive index, showcasing your achievements and findings.
+ 
 ![image](https://github.com/zulliu/pomopup/assets/11202096/c9bfd5ba-91bc-4bb2-ba41-998a368cb041)
 
 ![pup](https://github.com/zulliu/pomopup/assets/11202096/64b4e164-7fdf-4031-937a-ebfd7c5dc53a)
