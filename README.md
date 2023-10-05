@@ -28,16 +28,24 @@ This web application provides a Pomodoro timer integrated with fun interactions 
     npm install
     ```
 3. **Initialize Database(example with postgres command)**
+   
+   Mysterious items and data are not included.
    ```
    cd server
    createdb pomopup && psql -U [your username] -d pomopup -a -f schema.sql
 
    ```
-4. **Run the Application**
+5. **Run the Application**
     ```bash
     npm start
     ```
     The app will be running at http://localhost:3155/
+
+## DoTo
+- Better database and assets preset to start with.
+- More puppy behavior.
+- More mysterious Item.
+- More puppy models for selection.
 
 ## Dependencies
 - Next
