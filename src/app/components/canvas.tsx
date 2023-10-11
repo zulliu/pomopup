@@ -4,15 +4,18 @@ import {
 } from '@react-three/fiber';
 import { Html, Stats } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { ACTIONS, reducer, initialState } from './stateManage';
+import { ACTIONS } from './stateManage';
 import { useGlobalDispatch, useSetSceneHandlers, useGlobalState } from '../globalContext';
 import ItemsScene from './ItemsScene';
 import RenderStatic from './static';
+import Corgi from './Corgi';
+
+const tomatoPosition = {
+  corgi: [0, 1.5, 8.5],
+  collie: [0.5, 3, 11.5],
+};
 
 const Scene = function () {
-  const gltf = useLoader(GLTFLoader, '/collie.gltf');
-  const tomato = useLoader(GLTFLoader, '/tomato.gltf');
-  const setSceneHandlers = useSetSceneHandlers();
   const {
     leaving,
     layingDown,
@@ -26,9 +29,13 @@ const Scene = function () {
     showTooltip,
   } = useGlobalState();
   const dispatch = useGlobalDispatch();
+  const { dogMesh } = useGlobalState();
   const frameCountRef = useRef(0);
   const [tooltipText, setTooltipText] = useState('zzZZ');
 
+  const gltf = useLoader(GLTFLoader, `${dogMesh}.gltf`);
+  const tomato = useLoader(GLTFLoader, '/tomato.gltf');
+  const setSceneHandlers = useSetSceneHandlers();
   const JUMP_VELOCITY = 0.1;
   const GRAVITY = 0.01;
   useEffect(() => {
@@ -189,7 +196,8 @@ const Scene = function () {
   useEffect(() => {
     if (gltf && gltf.scene && tomato && tomato.scene) {
       tomato.scene.scale.set(0.7, 0.7, 0.7);
-      tomato.scene.position.set(0, 1.5, 8.5);
+      console.log(tomatoPosition, tomatoPosition[dogMesh]);
+      tomato.scene.position.set(...tomatoPosition[dogMesh]);
       gltf.scene.add(tomato.scene);
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -248,8 +256,9 @@ function RenderMain() {
       camera={{ position: [0, 2, 6] }}
       shadows="soft"
     >
-      <Scene />
       <RenderStatic />
+      {/* <Scene /> */}
+      <Corgi scale={0.1} />
       <ItemsScene items={userItems} />
     </Canvas>
   );

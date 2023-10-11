@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
-  Card, Typography, Avatar, Button,
+  Card, Typography, Avatar, Button, Dialog, DialogHeader,
 } from '@material-tailwind/react';
+import Cookies from 'js-cookie';
 import { useGlobalState, useGlobalDispatch } from '../globalContext';
 import { ACTIONS } from './stateManage';
 
@@ -36,10 +37,24 @@ const SHOP_ITEMS = [
 function Shop() {
   const dispatch = useGlobalDispatch();
   const globalState = useGlobalState();
+  const [open, setOpen] = useState(false);
+  const [puppyName, setPuppyName] = useState('');
+
+  const handleOpen = () => setOpen(!open);
+
+  const handlePuppyNameChange = (e) => {
+    setPuppyName(e.target.value);
+  };
+
+  const handlePuppyNameDecide = () => {
+    Cookies.set('puppy_name', puppyName);
+    dispatch({ type: ACTIONS.RESET_MESH_STATE });
+    handleOpen();
+  };
+
   const handlePurchase = (item) => {
     const newTomato = globalState?.tomatoNumber - item.price;
 
-    console.log(item, item.name);
     if (newTomato < 0) {
       alert("You don't have enough tomatoes!");
       return;
@@ -55,7 +70,7 @@ function Shop() {
         type: ACTIONS.SET_WALL_TEXTURE,
         payload: item.image,
       });
-    } else if (item.name === 'Collie') {
+    } else if (item.name === 'collie') {
       dispatch({
         type: ACTIONS.SWITCH_DOG,
         payload: 'collie',
@@ -112,29 +127,6 @@ function Shop() {
               </Button>
             </div>
           ))}
-          <div key="dog" className="border p-4 rounded-lg items-center">
-            <img src="mobi.png" alt="mobi.png" className="mx-auto w-32 h-32 object-cover rounded-lg" />
-            <Typography variant="small" color="blue-gray" className="font-normal text-center mt-2">
-              A Collie
-            </Typography>
-            <Typography variant="small" color="blue-gray" className="font-normal text-center">
-              Price:
-              {' '}
-              30
-              {' '}
-              Tomato
-            </Typography>
-            <Typography variant="small" color="blue-gray" className="font-normal text-center mt-1">
-              {'It\'s time to bring home a new dog!'}
-            </Typography>
-            <Button
-              className="mx-16 bg-primary"
-              onClick={() => handlePurchase({ name: 'collie', price: 30 })}
-              disabled={globalState.purchasedItems.includes('mobi')}
-            >
-              {globalState.purchasedItems.includes('mobi') ? 'Purchased' : 'Purchase'}
-            </Button>
-          </div>
         </div>
       </Card>
     </div>

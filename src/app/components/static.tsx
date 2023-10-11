@@ -158,8 +158,8 @@ const Sofa = function () {
           child.receiveShadow = true;
           child.castShadow = true;
           if (child.material.map) {
-            child.material.metalness = 0; // 0 means non-metallic
-            child.material.roughness = 1; // 0.5 is mid-way between rough and smooth
+            child.material.metalness = 0; // non-metallic
+            child.material.roughness = 1;
           }
         }
       });

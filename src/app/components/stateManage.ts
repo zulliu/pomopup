@@ -2,6 +2,7 @@ export const JUMP_VELOCITY = 0.1;
 export const GRAVITY = 0.01;
 
 export const initialState = {
+  currentAnimation: 'idle',
   position: { x: 0, y: 0, z: 0 },
   rotation: { x: 0, y: 0, z: 0 },
   velocity: 0,
@@ -23,6 +24,7 @@ export const initialState = {
     rugTexture: '/carpet3.jpg',
     wallTexture: '/wall.jpg',
   },
+  dogMesh: 'corgi',
 };
 
 export const ACTIONS = {
@@ -47,18 +49,28 @@ export const ACTIONS = {
   PURCHASE_ITEM: 'PURCHASE_ITEM',
   SET_RUG_TEXTURE: 'SET_RUG_TEXTURE',
   SET_WALL_TEXTURE: 'SET_WALL_TEXTURE',
-
+  ADD_PURCHASED_ITEM: 'ADD_PURCHASED_ITEM',
+  SWITCH_DOG: 'SWITCH_DOG',
+  SET_ANIMATION: 'SET_ANIMATION',
 };
 
 export function reducer(state, action) {
   switch (action.type) {
     case ACTIONS.JUMP:
       return {
-        ...state, velocity: JUMP_VELOCITY, yPosition: 0, jumpCount: 0, isJumping: true,
+        ...state,
+        velocity: JUMP_VELOCITY,
+        yPosition: 0,
+        jumpCount: 0,
+        isJumping: true,
       };
     case ACTIONS.LEAVE:
-      return { ...state, leaving: true };
-
+      return {
+        ...state,
+        position: { x: 0, y: 0, z: 0 },
+        rotation: { x: 0, y: 0, z: 0 },
+        leaving: true,
+      };
     case ACTIONS.RESET_LEAVE:
       return { ...state, leaving: false };
     case ACTIONS.BACK:
@@ -66,7 +78,7 @@ export function reducer(state, action) {
         ...state,
         leaving: action.type === ACTIONS.LEAVE,
         comingBack: action.type === ACTIONS.BACK,
-        rotation: { y: action.type === ACTIONS.BACK ? -Math.PI / 2 : 0 },
+        rotation: -Math.PI / 2,
         frameCount: 0,
       };
     case ACTIONS.RESET_BACK:
@@ -87,7 +99,6 @@ export function reducer(state, action) {
         hasReset: true,
         showTooltip: false,
       };
-
     case ACTIONS.RESET_APPLIED:
       return { ...state, hasReset: false };
     case ACTIONS.UPDATE_JUMP:
@@ -114,6 +125,8 @@ export function reducer(state, action) {
       return {
         ...state,
         ...state,
+        position: { x: 0, y: 0, z: 0 },
+        rotation: { x: 0, y: 0, z: 0 },
         leaving: false,
         comingBack: false,
         standingUp: false,
@@ -196,7 +209,16 @@ export function reducer(state, action) {
         ...state,
         purchasedItems: [...state.purchasedItems, action.payload],
       };
-
+    case ACTIONS.SWITCH_DOG:
+      return {
+        ...state,
+        dogMesh: action.payload,
+      };
+    case ACTIONS.SET_ANIMATION:
+      return {
+        ...state,
+        currentAnimation: action.payload,
+      };
     default:
       return state;
   }

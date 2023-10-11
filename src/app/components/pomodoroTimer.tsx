@@ -92,7 +92,8 @@ function PomodoroTimer({ setMessage }) {
   const startTimer = () => {
     setIsActive(true);
     if (!isPause) {
-      sceneHandlers.leave();
+      // sceneHandlers.leave();
+      dispatch({ type: 'SET_ANIMATION', payload: 'leave' });
     }
     setPause(false);
     setMessage(`Timer start. ${puppyName} has left the house.`);
@@ -106,7 +107,8 @@ function PomodoroTimer({ setMessage }) {
   const startRest = () => {
     setIsActive(true);
     if (!isRest) {
-      sceneHandlers.layDown();
+      // sceneHandlers.layDown();
+      dispatch({ type: 'SET_ANIMATION', payload: 'lay' });
     }
     setRest(true);
     setMessage('Have a good rest!');
@@ -117,7 +119,9 @@ function PomodoroTimer({ setMessage }) {
       return;
     }
     setIsActive(false);
-    sceneHandlers.back();
+    // sceneHandlers.back();
+    dispatch({ type: 'SET_ANIMATION', payload: 'back' });
+
     setMinutes(TIMER.POMO);
     setSeconds(0);
     if (!taskEnd) {
@@ -136,8 +140,9 @@ function PomodoroTimer({ setMessage }) {
     if (!isActive) {
       return;
     }
-    sceneHandlers.standUp();
-    setMessage('Welcome back from your  rest!');
+    // sceneHandlers.standUp();
+    dispatch({ type: 'SET_ANIMATION', payload: 'up' });
+    setMessage('Welcome back from your rest!');
     setRest(false);
     setMinutes(TIMER.SHORT);
     setSeconds(0);
@@ -258,7 +263,7 @@ function PomodoroTimer({ setMessage }) {
           </p>
         </div>
 
-        {/* Pomodoro Buttons */}
+        {/* Posdoro Buttons */}
         {activeTab === 'pomodoro' && (
         <div className="flex my-8">
           <CustomButton icon={faPlay} label="START" onClick={startTimer} />
