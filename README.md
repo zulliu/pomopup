@@ -41,7 +41,7 @@ This web application provides a Pomodoro timer integrated with fun interactions 
     ```
     The app will be running at http://localhost:3155/
 
-## DoTo
+## ToDo
 - Better database and assets preset to start with.
 - More puppy behavior.
 - More mysterious Item.
