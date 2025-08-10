@@ -133,7 +133,7 @@ function Wall(props) {
     <mesh
       {...props}
     >
-      <boxGeometry args={[20, 8, 0.1]} />
+      <boxGeometry args={[25, 8, 0.1]} />
       <meshStandardMaterial
         map={colorMap}
         roughness={1}
@@ -169,14 +169,15 @@ const Sofa = function () {
   return <primitive object={gltf.scene} scale={0.1} position={[-0.2, 0, -3.5]} rotation={[0, Math.PI, 0]} />;
 };
 
-function RenderStatic() {
+function RenderStatic({ isMobile = false }) {
   return (
     <>
-      <SoftShadows size={15} samples={20} />
+      {/* Reduce shadow quality on mobile to prevent shader conflicts */}
+      <SoftShadows size={isMobile ? 10 : 15} samples={isMobile ? 10 : 20} />
 
       <Box position={[1.2, -0.05, 0]} receiveShadow />
       <Rug position={[-0.1, 0, -4]} receiveShadow />
-      <Wall position={[0, 4, -5]} />
+      <Wall position={[0, 4, -6]} />
       <Sofa />
       <Stand />
       <Lamp position={[3.6, 2.2, -3.1]} />
@@ -205,14 +206,15 @@ function RenderStatic() {
         shadow-mapSize-height={1024}
       />
       <OrbitControls
-        makeDefault
-        // enablePan={false}
-        // enableZoom={false}
-        // maxAzimuthAngle={Math.PI / 12}
-        // minAzimuthAngle={-Math.PI / 8}
-        // minPolarAngle={Math.PI / 3}
-        // maxPolarAngle={Math.PI / 2.5}
-        // rotateSpeed={0.2}
+        // makeDefault
+        enablePan={false}
+        enableZoom={false}
+        target={isMobile ? [0, 1, 0] : [0, 0, 0]}  // Look at a higher point on mobile
+        maxAzimuthAngle={isMobile ? Math.PI / 24 : Math.PI / 12}  // More restricted on mobile
+        minAzimuthAngle={isMobile ? -Math.PI / 16 : -Math.PI / 8}  // More restricted on mobile
+        minPolarAngle={isMobile ? Math.PI / 2.8 : Math.PI / 3}  // Slightly higher minimum angle
+        maxPolarAngle={Math.PI / 2.5}
+        rotateSpeed={0.2}
       />
     </>
   );

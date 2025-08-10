@@ -1,57 +1,31 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import jwt from 'jsonwebtoken';
+import { useAppActions, useUI } from '../contexts/AppContext';
 
-import { useGlobalDispatch, useGlobalState } from '../globalContext';
-
-function Login({ setIsLoggedIn }) {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useGlobalDispatch();
+  const [errorMessage, setErrorMessage] = useState('');
+  const { login } = useAppActions();
+  const { isLoading } = useUI();
+
   const handleLogin = async () => {
     try {
-      const response = await axios.post('/api/login', { username, password });
-      if (response.status === 200) {
-        const decoded = jwt.decode(response.data.token);
-        Cookies.set('token', response.data.token, { httpOnly: false });
-        Cookies.set('user_id', decoded.user_id);
-        dispatch({
-          type: 'SET_TOMATO_NUMBER',
-          payload: decoded.tomato_number,
-        });
-
-        setIsLoggedIn(true);
-        try {
-          const userId = decoded.user_id;
-          // fetch log
-          const logs = await axios.get(`/api/getLogs?userId=${userId}`);
-          dispatch({ type: 'SET_LOGS', payload: logs.data });
-
-          // fetch user-specific items
-          const itemsResponse = await axios.get(`/api/getItemsByUserId?userId=${userId}`);
-          dispatch({ type: 'SET_USER_ITEMS', payload: itemsResponse.data });
-          Cookies.set('userItems', JSON.stringify(itemsResponse.data));
-        } catch (error) {}
-        try {
-          const itemsResponse = await axios.get('/api/getAllItems');
-          dispatch({ type: 'SET_ITEMS', payload: itemsResponse.data });
-          Cookies.set('items', JSON.stringify(itemsResponse.data));
-        } catch (error) {
-          console.error('Error fetching items:', error);
-        }
-      }
-    } catch (error) {}
+      setErrorMessage('');
+      await login(username, password);
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.error || 'Login failed');
+    }
   };
 
   return (
-    <div className="flex flex-col items-center h-1/3 w-1/2 ">
+    <div className="flex flex-col items-center h-1/3 w-1/2">
       <div className="flex flex-col mb-2">
         <input
           className="rounded my-1 p-2"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Username"
+          disabled={isLoading}
         />
         <input
           className="rounded my-1 p-2"
@@ -59,20 +33,25 @@ function Login({ setIsLoggedIn }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          disabled={isLoading}
         />
       </div>
+      
       <button
         type="button"
         onClick={handleLogin}
-        className="w-32 rounded bg-primary px-2 text-white hover:text-yellow active:bg-dark"
+        disabled={isLoading}
+        className="w-32 rounded bg-primary px-2 text-white hover:text-yellow active:bg-dark disabled:opacity-50"
       >
-        Login
-
+        {isLoading ? 'Loading...' : 'Login'}
       </button>
+      
       <img src="/paw.svg" alt="paw" className="m-3 mb-16" style={{ width: '2rem', height: 'auto' }} />
-
+      
+      {errorMessage && (
+        <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+      )}
     </div>
-
   );
 }
 

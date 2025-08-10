@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHome, faBagShopping, faClipboard, faBook, faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
+import { useAppActions } from '../contexts/AppContext';
 import LogList from './logList';
 import ItemIndex from './itemIndex';
 import Shop from './shop';
@@ -31,18 +31,81 @@ function CustomButton({
   );
 }
 
-function SideBar({ setIsLoggedIn }) {
+interface SideBarProps {
+  mobile?: boolean;
+}
+
+function SideBar({ mobile = false }: SideBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showLogList, setShowLogList] = useState(false);
   const [showItemIndex, setShowItemIndex] = useState(false);
   const [showShop, setShowShop] = useState(false);
+  const { logout } = useAppActions();
 
   const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('user_id');
-    setIsLoggedIn(false);
+    logout();
   };
 
+  // Mobile layout - horizontal with proper colors
+  if (mobile) {
+    return (
+      <div className="flex justify-center items-center gap-3">
+        <button
+          onClick={() => setShowShop(!showShop)}
+          className="p-2 bg-primary hover:bg-dark active:bg-dark rounded-lg transition-colors"
+          style={{ boxShadow: '0 0.2rem #A3869C' }}
+        >
+          <FontAwesomeIcon icon={faBagShopping} className="text-white text-lg" />
+        </button>
+        <button
+          onClick={() => setShowLogList(!showLogList)}
+          className="p-2 bg-primary hover:bg-dark active:bg-dark rounded-lg transition-colors"
+          style={{ boxShadow: '0 0.2rem #A3869C' }}
+        >
+          <FontAwesomeIcon icon={faClipboard} className="text-white text-lg" />
+        </button>
+        <button
+          onClick={() => setShowItemIndex(!showItemIndex)}
+          className="p-2 bg-primary hover:bg-dark active:bg-dark rounded-lg transition-colors"
+          style={{ boxShadow: '0 0.2rem #A3869C' }}
+        >
+          <FontAwesomeIcon icon={faBook} className="text-white text-lg" />
+        </button>
+        <button
+          onClick={handleLogout}
+          className="p-2 bg-red rounded-lg transition-colors"
+          style={{ boxShadow: '0 0.2rem #b85c50' }}
+        >
+          <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-white text-lg" />
+        </button>
+        
+        {/* Mobile Modals */}
+        {showShop && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-4 rounded-lg max-w-sm w-full max-h-[80vh] overflow-y-auto">
+              <Shop onClose={() => setShowShop(false)} />
+            </div>
+          </div>
+        )}
+        {showLogList && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-4 rounded-lg max-w-sm w-full max-h-[80vh] overflow-y-auto">
+              <LogList onClose={() => setShowLogList(false)} />
+            </div>
+          </div>
+        )}
+        {showItemIndex && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-4 rounded-lg max-w-sm w-full max-h-[80vh] overflow-y-auto">
+              <ItemIndex onClose={() => setShowItemIndex(false)} />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout - vertical
   return (
     <div className="h-full flex flex-col justify-end items-center space-y-6 pb-4">
       <div className="relative">

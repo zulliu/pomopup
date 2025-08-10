@@ -1,79 +1,97 @@
-import React, {
-  createContext, useContext, useReducer, useState,
-} from 'react';
-import jwt from 'jsonwebtoken';
-import Cookies from 'js-cookie';
-import { reducer, initialState } from './components/stateManage';
+// This file provides backward compatibility for components still using old context
+// It wraps the new AppContext to provide the old API
 
-const GlobalStateContext = createContext();
-const GlobalDispatchContext = createContext();
-const SceneHandlersContext = createContext();
-const SetSceneHandlersContext = createContext();
-const UserDataContext = createContext();
+import React, { createContext, useContext } from 'react';
+import { 
+  AppProvider as NewAppProvider, 
+  useAppState, 
+  useAppDispatch,
+  useAppActions,
+  useAuth,
+  useGame 
+} from './contexts/AppContext';
+import { ActionType } from './types/state';
 
-function getUserDataFromToken() {
-  const token = Cookies.get('token');
-  if (!token) return null;
+// Re-export ACTIONS for backward compatibility
+export const ACTIONS = ActionType;
 
-  const decoded = jwt.decode(token);
-  return decoded || null;
-}
+// Create contexts for backward compatibility
+const GlobalStateContext = createContext<any>(null);
+const GlobalDispatchContext = createContext<any>(null);
 
-const userDataFromToken = getUserDataFromToken();
-const itemsFromCookie = Cookies.get('items') ? JSON.parse(Cookies.get('items')) : [];
-const userItemsFromCookie = Cookies.get('userItems') ? JSON.parse(Cookies.get('userItems')) : [];
-
-const initialGlobalState = {
-
-  user: {
-    id: userDataFromToken?.user_id || null,
-    username: userDataFromToken?.username || null,
-    tomatoNumber: userDataFromToken?.tomato_number || 0,
-  },
-  items: itemsFromCookie,
-  userItems: userItemsFromCookie,
-  ...initialState,
-};
-
-function GlobalProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialGlobalState);
-  const [userData, setUserData] = useState(getUserDataFromToken());
-  const [sceneHandlers, setSceneHandlers] = useState({
-    jump: null,
-    leave: null,
-    back: null,
-    reset: null,
-    toggleTomato: null,
-  });
-
+// Compatibility wrapper
+export function GlobalProvider({ children }: { children: React.ReactNode }) {
   return (
-    <UserDataContext.Provider value={userData}>
-      <GlobalStateContext.Provider value={state}>
-        <GlobalDispatchContext.Provider value={dispatch}>
-          <SceneHandlersContext.Provider value={sceneHandlers}>
-            <SetSceneHandlersContext.Provider value={setSceneHandlers}>
-              {children}
-            </SetSceneHandlersContext.Provider>
-          </SceneHandlersContext.Provider>
-        </GlobalDispatchContext.Provider>
-      </GlobalStateContext.Provider>
-    </UserDataContext.Provider>
-
+    <NewAppProvider>
+      <GlobalCompatibilityProvider>
+        {children}
+      </GlobalCompatibilityProvider>
+    </NewAppProvider>
   );
 }
 
-// Use these hooks in your components
-const useGlobalState = () => useContext(GlobalStateContext);
-const useGlobalDispatch = () => useContext(GlobalDispatchContext);
-const useSceneHandlers = () => useContext(SceneHandlersContext);
-const useSetSceneHandlers = () => useContext(SetSceneHandlersContext);
-const useUserData = () => useContext(UserDataContext);
+function GlobalCompatibilityProvider({ children }: { children: React.ReactNode }) {
+  const state = useAppState();
+  const dispatch = useAppDispatch();
+  
+  // Map new state structure to old structure for compatibility
+  const compatState = {
+    currentAnimation: state.game.currentAnimation,
+    showTomato: state.game.showTomato,
+    tomatoNumber: state.game.tomatoNumber,
+    items: state.game.items,
+    userItems: state.game.userItems,
+    logs: state.game.logs,
+    environmentSettings: state.game.environmentSettings,
+    dogMesh: state.game.dogMesh,
+    user: state.auth.user ? {
+      id: state.auth.user.id,
+      username: state.auth.user.username,
+      tomatoNumber: state.auth.user.tomatoNumber,
+    } : null,
+  };
 
-export {
-  GlobalProvider,
-  useGlobalState,
-  useGlobalDispatch,
-  useSceneHandlers,
-  useSetSceneHandlers,
-  useUserData,
+  return (
+    <GlobalStateContext.Provider value={compatState}>
+      <GlobalDispatchContext.Provider value={dispatch}>
+        {children}
+      </GlobalDispatchContext.Provider>
+    </GlobalStateContext.Provider>
+  );
+}
+
+// Compatibility hooks
+export const useGlobalState = () => {
+  const context = useContext(GlobalStateContext);
+  if (!context) {
+    // If not in compatibility wrapper, use new state directly
+    const state = useAppState();
+    return {
+      currentAnimation: state.game.currentAnimation,
+      showTomato: state.game.showTomato,
+      tomatoNumber: state.game.tomatoNumber,
+      items: state.game.items,
+      userItems: state.game.userItems,
+      logs: state.game.logs,
+      environmentSettings: state.game.environmentSettings,
+      dogMesh: state.game.dogMesh,
+    };
+  }
+  return context;
 };
+
+export const useGlobalDispatch = () => {
+  const context = useContext(GlobalDispatchContext);
+  if (!context) {
+    return useAppDispatch();
+  }
+  return context;
+};
+
+export const useUserData = () => {
+  const auth = useAuth();
+  return auth.user;
+};
+
+// Re-export new hooks
+export { useAppActions, useAppState, useAuth, useGame } from './contexts/AppContext';
